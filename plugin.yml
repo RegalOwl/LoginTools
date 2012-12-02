@@ -1,0 +1,38 @@
+name: LoginTools
+main: regalowl.logintools.LoginTools
+version: 0.1
+author: RegalOwl
+commands:
+   playerip:
+      description: This command gets.
+      permission: loginlist.getip
+      permission-message: Unknown command. Type "help" for help.
+      aliases: [pip]
+   playerinfo:
+      description: This command displays information about the specified player.
+      permission: loginlist.pi
+      permission-message: Unknown command. Type "help" for help.
+      aliases: [pi]
+   lstats:
+      description: Displays logintools statistics.
+      permission: loginlist.admin
+      permission-message: Unknown command. Type "help" for help.
+      aliases: [lst]
+   sharedip:
+      description: Displays players that have used the same IP as the specified one.
+      permission: loginlist.admin
+      permission-message: Unknown command. Type "help" for help.
+      aliases: [sip]
+permissions:
+    logintools.admin:
+        description: Gives access to all commands
+        default: op
+        children:
+            loginlist.pi: true
+            loginlist.getip: true
+    logintools.pi:
+        description: Allows display of player info.
+        default: false
+    logintools.getip:
+        description: Gets all of the selected player's ip addresses.
+        default: false
