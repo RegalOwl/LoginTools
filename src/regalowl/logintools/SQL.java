@@ -114,6 +114,28 @@ public class SQL {
 			return data;
 		}
 	}
+	
+	
+	
+	public ArrayList<Long> getLongArray(String statement) {
+		ArrayList<Long> data = new ArrayList<Long>();
+		try {
+			Connection connect = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password);
+			Statement state = connect.createStatement();
+			ResultSet result = state.executeQuery(statement);
+			while (result.next()) {
+				data.add(result.getLong(1));
+			}
+			result.close();
+			state.close();
+			connect.close();
+			return data;
+		} catch (SQLException e) {
+			Bukkit.broadcast(ChatColor.RED + "SQL connection failed.  Check your config settings.", "hyperconomy.error");
+			e.printStackTrace();
+			return data;
+		}
+	}
 
 	
 	
@@ -158,6 +180,19 @@ public class SQL {
 		lt.getSQLWrite().writeData(statement);
 	}
 	
+	public void addKill(String player, String kill) {
+		String statement = "INSERT INTO logintools_kills (PLAYER, KILLED) VALUES ('" + player + "','" + kill + "')";
+		lt.getSQLWrite().writeData(statement);
+		statement = "UPDATE logintools_firstlogin SET KILLS = KILLS + '" + 1 + "' WHERE PLAYER = '" + player + "'";
+		lt.getSQLWrite().writeData(statement);		
+	}
+	
+	public void addDeath(String player, String message) {
+		String statement = "INSERT INTO logintools_deaths (PLAYER, MESSAGE) VALUES ('" + player + "','" + message + "')";
+		lt.getSQLWrite().writeData(statement);
+		statement = "UPDATE logintools_firstlogin SET DEATHS = DEATHS + '" + 1 + "' WHERE PLAYER = '" + player + "'";
+		lt.getSQLWrite().writeData(statement);
+	}
 	
 
 	
@@ -167,8 +202,10 @@ public class SQL {
 		try {
 			Connection connect = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password);
 			Statement state = connect.createStatement();
-			state.execute("CREATE TABLE IF NOT EXISTS logintools_firstlogin (ID INT NOT NULL AUTO_INCREMENT, PLAYER TINYTEXT, TIME DATETIME, PLAYTIME BIGINT(64), PRIMARY KEY (ID))");
-			state.execute("CREATE TABLE IF NOT EXISTS logintools_logins (ID INT NOT NULL AUTO_INCREMENT, PLAYER TINYTEXT, LOGIN_TIME DATETIME, IP TEXT, PRIMARY KEY (ID))");
+			state.execute("CREATE TABLE IF NOT EXISTS logintools_firstlogin (ID INT NOT NULL AUTO_INCREMENT, PLAYER TINYTEXT NOT NULL, TIME DATETIME NOT NULL, PLAYTIME BIGINT(64) NOT NULL DEFAULT '0', KILLS INT NOT NULL DEFAULT '0', DEATHS INT NOT NULL DEFAULT '0', PRIMARY KEY (ID))");
+			state.execute("CREATE TABLE IF NOT EXISTS logintools_logins (ID INT NOT NULL AUTO_INCREMENT, PLAYER TINYTEXT NOT NULL, LOGIN_TIME DATETIME NOT NULL, IP TEXT NOT NULL, PRIMARY KEY (ID))");
+			state.execute("CREATE TABLE IF NOT EXISTS logintools_deaths (ID INT NOT NULL AUTO_INCREMENT, PLAYER TINYTEXT NOT NULL, MESSAGE TEXT NOT NULL, PRIMARY KEY (ID))");
+			state.execute("CREATE TABLE IF NOT EXISTS logintools_kills (ID INT NOT NULL AUTO_INCREMENT, PLAYER TINYTEXT NOT NULL, KILLED TINYTEXT NOT NULL, PRIMARY KEY (ID))");
 			state.close();
 			connect.close();
 			return true;

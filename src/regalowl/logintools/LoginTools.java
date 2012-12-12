@@ -29,7 +29,7 @@ public class LoginTools extends JavaPlugin {
     		ti = new Timer(600L);
         	sw = new SQLWrite();
         	cp = new ConnectionPool();
-        	new LoginListener();
+        	new Listeners();
     	} else {
 			log.severe("[LoginTools] Database connection error.  Shutting down...");
 			getServer().getScheduler().cancelTasks(this);
@@ -129,6 +129,105 @@ public class LoginTools extends JavaPlugin {
     		sender.sendMessage(ChatColor.GRAY + "-----------------------------------------------------");
     		return true;
     	}
+    	
+    	
+    	
+    	if (cmd.getName().equalsIgnoreCase("toptime")){
+    		int ps = 0;
+    		if (args.length == 1) {
+    			ps = Integer.parseInt(args[0]) - 1;
+    		} else if (args.length > 1) {
+    			sender.sendMessage(ChatColor.DARK_RED + "Use /toptime (page)");
+    		}
+    		ArrayList<String> players = sql.getStringArray("SELECT PLAYER FROM logintools_firstlogin ORDER BY PLAYTIME DESC");
+    		ArrayList<Long> playtime = sql.getLongArray("SELECT PLAYTIME FROM logintools_firstlogin ORDER BY PLAYTIME DESC");
+
+    		if (ps < 0) {
+    			ps = 0;
+    		}
+    		
+    		sender.sendMessage("----- Top Play Time -----");
+    		sender.sendMessage("----- Page (" + (ps + 1) + "/" + (int)Math.ceil(players.size()/10.0) + ") -----");
+    		
+			int pe = ps + 1;
+			ps *= 10;
+			pe *= 10;
+			for (int i = ps; i < pe; i++) {
+				if (i > (playtime.size() - 1)) {
+					sender.sendMessage(ChatColor.WHITE + "You have reached the end.");
+					return true;
+				}
+				sender.sendMessage((i + 1) + " " + ChatColor.AQUA + players.get(i) + ChatColor.WHITE + ": " + ChatColor.GREEN + (int)Math.floor((double)playtime.get(i)/3600.0) + ChatColor.BLUE + " hours and " + ChatColor.GREEN + (playtime.get(i)%3600)/60 + ChatColor.BLUE + " minutes");
+			}
+
+    		return true;
+    	}
+    	
+    	
+    	
+    	if (cmd.getName().equalsIgnoreCase("topkills")){
+    		int ps = 0;
+    		if (args.length == 1) {
+    			ps = Integer.parseInt(args[0]) - 1;
+    		} else if (args.length > 1) {
+    			sender.sendMessage(ChatColor.DARK_RED + "Use /topkills (page)");
+    		}
+    		ArrayList<String> players = sql.getStringArray("SELECT PLAYER FROM logintools_firstlogin ORDER BY KILLS DESC");
+    		ArrayList<Long> kills = sql.getLongArray("SELECT KILLS FROM logintools_firstlogin ORDER BY KILLS DESC");
+
+    		if (ps < 0) {
+    			ps = 0;
+    		}
+    		
+    		sender.sendMessage("----- Top Kills -----");
+    		sender.sendMessage("----- Page (" + (ps + 1) + "/" + (int)Math.ceil(players.size()/10.0) + ") -----");
+			int pe = ps + 1;
+			
+			ps *= 10;
+			pe *= 10;
+			for (int i = ps; i < pe; i++) {
+				if (i > (kills.size() - 1)) {
+					sender.sendMessage(ChatColor.WHITE + "You have reached the end.");
+					return true;
+				}
+				sender.sendMessage((i + 1) + " " + ChatColor.AQUA + players.get(i) + ChatColor.WHITE + ": " + ChatColor.GREEN + kills.get(i));
+			}
+
+    		return true;
+    	}
+    	
+    	
+    	if (cmd.getName().equalsIgnoreCase("topdeaths")){
+    		int ps = 0;
+    		if (args.length == 1) {
+    			ps = Integer.parseInt(args[0]) - 1;
+    		} else if (args.length > 1) {
+    			sender.sendMessage(ChatColor.DARK_RED + "Use /topdeaths (page)");
+    		}
+    		ArrayList<String> players = sql.getStringArray("SELECT PLAYER FROM logintools_firstlogin ORDER BY DEATHS DESC");
+    		ArrayList<Long> deaths = sql.getLongArray("SELECT DEATHS FROM logintools_firstlogin ORDER BY DEATHS DESC");
+
+    		if (ps < 0) {
+    			ps = 0;
+    		}
+    		
+    		sender.sendMessage("----- Top Deaths -----");
+    		sender.sendMessage("----- Page (" + (ps + 1) + "/" + (int)Math.ceil(players.size()/10.0) + ") -----");
+			int pe = ps + 1;
+			ps *= 10;
+			pe *= 10;
+			for (int i = ps; i < pe; i++) {
+				if (i > (deaths.size() - 1)) {
+					sender.sendMessage(ChatColor.WHITE + "You have reached the end.");
+					return true;
+				}
+				sender.sendMessage((i + 1) + " " + ChatColor.AQUA + players.get(i) + ChatColor.WHITE + ": " + ChatColor.GREEN + deaths.get(i));
+			}
+
+    		return true;
+    	}
+    	
+    	
     	
     	if (cmd.getName().equalsIgnoreCase("lstats")){
     		sender.sendMessage("Buffer Size: " + sw.getBufferSize());

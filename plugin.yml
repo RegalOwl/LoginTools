@@ -15,14 +15,29 @@ commands:
       aliases: [pi]
    lstats:
       description: Displays logintools statistics.
-      permission: loginlist.admin
+      permission: logintools.admin
       permission-message: Unknown command. Type "help" for help.
       aliases: [lst]
    sharedip:
       description: Displays players that have used the same IP as the specified one.
-      permission: loginlist.admin
+      permission: logintools.admin
       permission-message: Unknown command. Type "help" for help.
       aliases: [sip]
+   toptime:
+      description: Displays players with the top server playtimes.
+      permission: logintools.top
+      permission-message: Unknown command. Type "help" for help.
+      aliases: [tot]
+   topkills:
+      description: Displays players with the top server kills.
+      permission: logintools.top
+      permission-message: Unknown command. Type "help" for help.
+      aliases: [tok]
+   topdeaths:
+      description: Displays players with the top server deaths.
+      permission: logintools.top
+      permission-message: Unknown command. Type "help" for help.
+      aliases: [tod]
 permissions:
     logintools.admin:
         description: Gives access to all commands
@@ -30,9 +45,13 @@ permissions:
         children:
             loginlist.pi: true
             loginlist.getip: true
+            logintools.top: true
     logintools.pi:
         description: Allows display of player info.
         default: false
     logintools.getip:
         description: Gets all of the selected player's ip addresses.
+        default: false
+    logintools.top:
+        description: Allows access to top commands.
         default: false
