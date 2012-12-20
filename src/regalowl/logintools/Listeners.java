@@ -53,9 +53,9 @@ public class Listeners implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
     	Player p = event.getEntity();
-    	String message = event.getDeathMessage();
+    	String message = event.getDeathMessage().replace(p.getName(), "");
     	String playername = p.getName();
-    	sql.addDeath(playername, message);
+    	sql.addDeath(playername, message, p.getLocation());
 	}
 	
 	
@@ -64,7 +64,7 @@ public class Listeners implements Listener {
 		if (event.getEntity().getKiller() instanceof Player) {
 			String type = event.getEntityType().getName();
 			Player killer = event.getEntity().getKiller();
-			sql.addKill(killer.getName(), type);
+			sql.addKill(killer.getName(), type, event.getEntity().getLocation());
 		}
 	}
 	

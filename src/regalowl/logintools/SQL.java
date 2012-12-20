@@ -8,6 +8,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class SQL {
@@ -180,15 +181,15 @@ public class SQL {
 		lt.getSQLWrite().writeData(statement);
 	}
 	
-	public void addKill(String player, String kill) {
-		String statement = "INSERT INTO logintools_kills (PLAYER, KILLED) VALUES ('" + player + "','" + kill + "')";
+	public void addKill(String player, String kill, Location loc) {
+		String statement = "INSERT INTO logintools_kills (TIME, PLAYER, KILLED, X, Y, Z, WORLD) VALUES (NOW(), '" + player + "','" + kill + "','" + loc.getBlockX() + "','" + loc.getBlockY() + "','" + loc.getBlockZ() + "','" + loc.getWorld().getName() + "')";
 		lt.getSQLWrite().writeData(statement);
 		statement = "UPDATE logintools_firstlogin SET KILLS = KILLS + '" + 1 + "' WHERE PLAYER = '" + player + "'";
 		lt.getSQLWrite().writeData(statement);		
 	}
 	
-	public void addDeath(String player, String message) {
-		String statement = "INSERT INTO logintools_deaths (PLAYER, MESSAGE) VALUES ('" + player + "','" + message + "')";
+	public void addDeath(String player, String message, Location loc) {
+		String statement = "INSERT INTO logintools_deaths (TIME, PLAYER, MESSAGE, X, Y, Z, WORLD) VALUES (NOW(), '" + player + "','" + message + "','" + loc.getBlockX() + "','" + loc.getBlockY() + "','" + loc.getBlockZ() + "','" + loc.getWorld().getName() + "')";
 		lt.getSQLWrite().writeData(statement);
 		statement = "UPDATE logintools_firstlogin SET DEATHS = DEATHS + '" + 1 + "' WHERE PLAYER = '" + player + "'";
 		lt.getSQLWrite().writeData(statement);
@@ -204,8 +205,8 @@ public class SQL {
 			Statement state = connect.createStatement();
 			state.execute("CREATE TABLE IF NOT EXISTS logintools_firstlogin (ID INT NOT NULL AUTO_INCREMENT, PLAYER TINYTEXT NOT NULL, TIME DATETIME NOT NULL, PLAYTIME BIGINT(64) NOT NULL DEFAULT '0', KILLS INT NOT NULL DEFAULT '0', DEATHS INT NOT NULL DEFAULT '0', PRIMARY KEY (ID))");
 			state.execute("CREATE TABLE IF NOT EXISTS logintools_logins (ID INT NOT NULL AUTO_INCREMENT, PLAYER TINYTEXT NOT NULL, LOGIN_TIME DATETIME NOT NULL, IP TEXT NOT NULL, PRIMARY KEY (ID))");
-			state.execute("CREATE TABLE IF NOT EXISTS logintools_deaths (ID INT NOT NULL AUTO_INCREMENT, PLAYER TINYTEXT NOT NULL, MESSAGE TEXT NOT NULL, PRIMARY KEY (ID))");
-			state.execute("CREATE TABLE IF NOT EXISTS logintools_kills (ID INT NOT NULL AUTO_INCREMENT, PLAYER TINYTEXT NOT NULL, KILLED TINYTEXT NOT NULL, PRIMARY KEY (ID))");
+			state.execute("CREATE TABLE IF NOT EXISTS logintools_deaths (ID INT NOT NULL AUTO_INCREMENT, TIME DATETIME NOT NULL, PLAYER TINYTEXT NOT NULL, MESSAGE TEXT NOT NULL, X INT NOT NULL, Y INT NOT NULL, Z INT NOT NULL, WORLD VARCHAR(64), PRIMARY KEY (ID))");
+			state.execute("CREATE TABLE IF NOT EXISTS logintools_kills (ID INT NOT NULL AUTO_INCREMENT, TIME DATETIME NOT NULL, PLAYER TINYTEXT NOT NULL, KILLED TINYTEXT NOT NULL, X INT NOT NULL, Y INT NOT NULL, Z INT NOT NULL, WORLD VARCHAR(64), PRIMARY KEY (ID))");
 			state.close();
 			connect.close();
 			return true;
