@@ -1,7 +1,0 @@
-sql-connection:
-  username: default
-  port: 3306
-  password: default
-  host: localhost
-  database: minecraft
-  max-sql-threads: 5

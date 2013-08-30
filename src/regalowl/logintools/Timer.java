@@ -42,7 +42,7 @@ public class Timer {
 		Player[] players = Bukkit.getOnlinePlayers();
 		for (Player player: players) {
 			String name = player.getName();
-			lt.getSQL().addPlaytime(name, msecs/1000);
+			lt.addPlaytime(name, msecs/1000);
 		}
 	}
 	

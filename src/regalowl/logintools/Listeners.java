@@ -20,11 +20,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 public class Listeners implements Listener {
 	
 	private LoginTools lt;
-	private SQL sql;
 	
     public Listeners() {
     	lt = LoginTools.lt;
-    	sql = lt.getSQL();
     	lt.getServer().getPluginManager().registerEvents(this, lt);
     }
     
@@ -37,16 +35,39 @@ public class Listeners implements Listener {
     	String playername = event.getPlayer().getName();
     	String ipaddress = event.getPlayer().getAddress().getAddress().toString();
     	ipaddress = ipaddress.substring(1, ipaddress.length());
-    	sql.checkPlayer(playername);
-    	sql.addLogin(playername, ipaddress);
-    	
-    	ArrayList<String> sharedIpPlayer = sql.getStringArray("SELECT DISTINCT PLAYER FROM logintools_logins WHERE IP = '" + ipaddress + "'");
-    	for (String player:sharedIpPlayer) {
-    		OfflinePlayer p = Bukkit.getOfflinePlayer(player);
-    		if (p.isBanned()) {
-    			Bukkit.broadcast("Player " + playername + " has the same IP as banned player " + player + ".", "logintools.admin");
-    		}
-    	}
+    	new PlayerLogin(ipaddress, playername);
+
+	}
+	
+	
+	
+	private class PlayerLogin {
+		private String ipaddress;
+		private String playername;
+		private ArrayList<String> sharedIpPlayer;
+		private LoginTools lt;
+		PlayerLogin(String ip, String name) {
+			lt = LoginTools.lt;
+			ipaddress = ip;
+			playername = name;
+			lt.getServer().getScheduler().runTaskAsynchronously(lt, new Runnable() {
+	    		public void run() {
+	    			sharedIpPlayer = lt.getDb().getSQLRead().getStringList("SELECT DISTINCT PLAYER FROM logintools_logins WHERE IP = '" + ipaddress + "'");
+	    	    	lt.checkPlayer(playername);
+	    	    	lt.addLogin(playername, ipaddress);
+	    			lt.getServer().getScheduler().runTask(lt, new Runnable() {
+	    	    		public void run() {
+	    	    	    	for (String player:sharedIpPlayer) {
+	    	    	    		OfflinePlayer p = Bukkit.getOfflinePlayer(player);
+	    	    	    		if (p.isBanned()) {
+	    	    	    			Bukkit.broadcast("Player " + playername + " has the same IP as banned player " + player + ".", "logintools.admin");
+	    	    	    		}
+	    	    	    	}
+	    	    		}
+	    	    	});
+	    		}
+	    	});
+		}
 	}
 	
 	
@@ -55,7 +76,7 @@ public class Listeners implements Listener {
     	Player p = event.getEntity();
     	String message = event.getDeathMessage().replace(p.getName(), "");
     	String playername = p.getName();
-    	sql.addDeath(playername, message, p.getLocation());
+    	lt.addDeath(playername, message, p.getLocation());
 	}
 	
 	
@@ -64,7 +85,7 @@ public class Listeners implements Listener {
 		if (event.getEntity().getKiller() instanceof Player) {
 			String type = event.getEntityType().getName();
 			Player killer = event.getEntity().getKiller();
-			sql.addKill(killer.getName(), type, event.getEntity().getLocation());
+			lt.addKill(killer.getName(), type, event.getEntity().getLocation());
 		}
 	}
 	
